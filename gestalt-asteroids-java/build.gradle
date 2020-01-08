@@ -1,0 +1,43 @@
+apply plugin: 'application'
+
+
+project.ext.lwjglVersion = "3.2.3"
+project.ext.lwjglNatives = "natives-windows"
+
+repositories {
+    jcenter()
+    maven {
+        url "http://artifactory.terasology.org/artifactory/virtual-repo-live"
+    }
+    mavenLocal()
+}
+
+dependencies {
+    implementation project(":gestalt-asteroids-common")
+
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    implementation 'de.matthiasmann.twl:PNGDecoder:1111'
+
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-assimp"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-openal"
+    implementation "org.lwjgl:lwjgl-opengl"
+    implementation "org.lwjgl:lwjgl-stb"
+    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+
+    implementation "org.terasology.gestalt:gestalt-es-perf:7.0.4-SNAPSHOT"
+}
+
+application {
+    mainClassName = 'org.terasology.gestalt.example.asteroids.java.Main'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8

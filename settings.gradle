@@ -1,0 +1,8 @@
+rootProject.name='gestalt-asteroids'
+include ':gestalt-asteroids-common', ':gestalt-asteroids-java'
+
+if (new File("local.properties").exists()) {
+    include ':gestalt-asteroids-android'
+} else {
+    println "No local.properties file found, bypassing Android elements"
+}
