@@ -19,9 +19,13 @@ public class AssetSubsystem implements Subsystem {
     }
 
     @Override
-    public void initialise() {
+    public void initialise(Engine engine) {
         assetTypeManager = new ModuleAwareAssetTypeManagerImpl();
         assetManager = new AssetManager(assetTypeManager);
+    }
+
+    @Override
+    public void registerAssetTypes(ModuleAwareAssetTypeManager assetTypeManager) {
     }
 
     @Override

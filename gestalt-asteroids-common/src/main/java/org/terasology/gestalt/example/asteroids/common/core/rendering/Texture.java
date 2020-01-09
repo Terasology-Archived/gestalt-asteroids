@@ -1,14 +1,19 @@
 package org.terasology.gestalt.example.asteroids.common.core.rendering;
 
+import org.joml.Vector2ic;
 import org.terasology.gestalt.assets.Asset;
 import org.terasology.gestalt.assets.AssetType;
+import org.terasology.gestalt.assets.DisposableResource;
 import org.terasology.gestalt.assets.ResourceUrn;
 
 public abstract class Texture extends Asset<TextureData> {
 
-    public Texture(ResourceUrn urn, AssetType<?, TextureData> type, TextureData data) {
-        super(urn, type);
-        reload(data);
+    protected Texture(ResourceUrn urn, AssetType<?, TextureData> type, DisposableResource resource) {
+        super(urn, type, resource);
     }
+
+    public abstract Vector2ic getSize();
+
+    public abstract boolean isLoaded();
 
 }

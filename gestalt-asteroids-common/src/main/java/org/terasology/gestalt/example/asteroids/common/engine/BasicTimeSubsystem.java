@@ -1,5 +1,6 @@
 package org.terasology.gestalt.example.asteroids.common.engine;
 
+import org.terasology.gestalt.assets.module.ModuleAwareAssetTypeManager;
 import org.terasology.gestalt.module.ModuleEnvironment;
 
 public class BasicTimeSubsystem implements TimeSubsystem {
@@ -17,8 +18,12 @@ public class BasicTimeSubsystem implements TimeSubsystem {
     }
 
     @Override
-    public void initialise() {
+    public void initialise(Engine engine) {
        lastTime = getTime();
+    }
+
+    @Override
+    public void registerAssetTypes(ModuleAwareAssetTypeManager assetTypeManager) {
     }
 
     @Override

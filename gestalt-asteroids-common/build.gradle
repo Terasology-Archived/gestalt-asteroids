@@ -2,14 +2,26 @@ apply plugin: 'java-library'
 
 project.ext.jomlVersion = "1.9.19"
 
+repositories {
+    jcenter()
+    maven {
+        url "http://artifactory.terasology.org/artifactory/virtual-repo-live"
+    }
+    mavenLocal()
+}
+
 // Primary dependencies definition
 dependencies {
     api "org.joml:joml:${jomlVersion}"
     api "com.google.guava:guava:27.0.1-android"
 
-    implementation "org.terasology.gestalt:gestalt-entity-system:7.0.4-SNAPSHOT"
-    implementation "org.terasology.gestalt:gestalt-module:7.0.4-SNAPSHOT"
-    implementation "org.terasology.gestalt:gestalt-asset-core:7.0.4-SNAPSHOT"
+    api "org.terasology.gestalt:gestalt-entity-system:7.0.4-SNAPSHOT"
+    api "org.terasology.gestalt:gestalt-module:7.0.4-SNAPSHOT"
+    api "org.terasology.gestalt:gestalt-asset-core:7.0.4-SNAPSHOT"
+    api "org.terasology.gestalt:gestalt-util:7.0.4-SNAPSHOT"
+
+    implementation 'de.matthiasmann.twl:PNGDecoder:1111'
+    implementation 'com.google.code.gson:gson:2.8.6'
 
     implementation "org.slf4j:slf4j-api:$slf4j_version"
     implementation "com.android.support:support-annotations:$android_annotation_version"

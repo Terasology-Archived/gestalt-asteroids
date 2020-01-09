@@ -17,8 +17,6 @@ dependencies {
 
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
-    implementation 'de.matthiasmann.twl:PNGDecoder:1111'
-
     implementation "org.lwjgl:lwjgl"
     implementation "org.lwjgl:lwjgl-assimp"
     implementation "org.lwjgl:lwjgl-glfw"
