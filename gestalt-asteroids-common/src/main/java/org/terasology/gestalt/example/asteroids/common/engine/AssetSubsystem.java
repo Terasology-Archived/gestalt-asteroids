@@ -25,20 +25,6 @@ public class AssetSubsystem implements Subsystem {
     }
 
     @Override
-    public void registerAssetTypes(ModuleAwareAssetTypeManager assetTypeManager) {
-    }
-
-    @Override
-    public void tick(int delta) {
-
-    }
-
-    @Override
-    public void close() {
-
-    }
-
-    @Override
     public void onEnvironmentChanged(ModuleEnvironment environment) {
         assetTypeManager.switchEnvironment(environment);
     }

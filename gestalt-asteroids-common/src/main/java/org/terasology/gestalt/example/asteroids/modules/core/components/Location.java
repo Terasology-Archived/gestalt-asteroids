@@ -1,16 +1,18 @@
-package org.terasology.gestalt.example.asteroids.common.core.components;
+package org.terasology.gestalt.example.asteroids.modules.core.components;
 
 import org.joml.Quaternionf;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
 import org.joml.Vector3fc;
 import org.terasology.gestalt.entitysystem.component.Component;
+import org.terasology.gestalt.example.asteroids.common.engine.entitysystem.HighUsage;
 
+@HighUsage
 public class Location implements Component<Location> {
 
     private final Vector3f position = new Vector3f();
     private final Quaternionf rotation = new Quaternionf();
-    private final Vector3f scale = new Vector3f();
+    private final Vector3f scale = new Vector3f(1,1,1);
 
     public Location() {}
 

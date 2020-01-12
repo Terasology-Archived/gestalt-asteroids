@@ -1,4 +1,4 @@
-package org.terasology.gestalt.example.asteroids.common.core.rendering;
+package org.terasology.gestalt.example.asteroids.common.rendering;
 
 import org.joml.Vector2ic;
 import org.terasology.gestalt.assets.Asset;

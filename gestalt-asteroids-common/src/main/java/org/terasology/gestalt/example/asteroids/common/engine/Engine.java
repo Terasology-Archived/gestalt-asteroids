@@ -1,6 +1,5 @@
 package org.terasology.gestalt.example.asteroids.common.engine;
 
-import org.terasology.gestalt.example.asteroids.common.core.GameThread;
 import org.terasology.gestalt.module.Module;
 
 import java.util.ArrayList;
@@ -47,10 +46,12 @@ public class Engine {
         for (Subsystem subsystem : subsystems) {
             subsystem.onEnvironmentChanged(moduleSubsystem.getEnvironment());
         }
+        for (Subsystem subsystem : subsystems) {
+            subsystem.onAssetsAvailable(assetSubsystem.getAssetManager());
+        }
     }
 
     private void start() {
-        GameThread.setToCurrentThread();
         for (Subsystem subsystem : subsystems) {
             subsystem.initialise(this);
         }
@@ -63,7 +64,6 @@ public class Engine {
     private void loop() {
         while (!shutdown) {
             for (Subsystem subsystem : subsystems) {
-                GameThread.processWaitingProcesses();
                 subsystem.tick(timeSubsystem.deltaMs());
             }
         }
@@ -71,10 +71,17 @@ public class Engine {
 
     private void shutdown() {
         for (Subsystem subsystem : subsystems) {
-            GameThread.processWaitingProcesses();
             subsystem.close();
         }
     }
 
+    public <T extends Subsystem> T getSubsystemOfType(Class<T> type) {
+        for (Subsystem subsystem : subsystems) {
+            if (type.isInstance(subsystem)) {
+                return type.cast(subsystem);
+            }
+        }
+        return null;
+    }
 
 }

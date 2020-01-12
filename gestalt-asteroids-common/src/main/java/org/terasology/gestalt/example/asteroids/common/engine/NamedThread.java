@@ -1,17 +1,13 @@
-package org.terasology.gestalt.example.asteroids.common.core;
+package org.terasology.gestalt.example.asteroids.common.engine;
 
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.AbstractFuture;
 import com.google.common.util.concurrent.Futures;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
@@ -19,18 +15,20 @@ import java.util.function.Supplier;
 /**
  * Todo: Rather than singleton, add a dependency injection framework?
  */
-public class GameThread {
-    private static volatile Thread gameThread = Thread.currentThread();
-    private static BlockingQueue<Runnable> pendingRunnables = new LinkedBlockingQueue<>();
+public class NamedThread {
+    private final Thread thread;
+    private final BlockingQueue<Runnable> pendingRunnables = new LinkedBlockingQueue<>();
 
-    private GameThread() {
+    public NamedThread(String name, Thread thread) {
+        this.thread = thread;
+        thread.setName(name);
     }
 
     /**
-     * @return Whether the currentThread is the gameThread.
+     * @return Whether the currentThread is the named thrad.
      */
-    public static boolean isCurrentThread() {
-        return Thread.currentThread() == gameThread;
+    public boolean isCurrentThread() {
+        return Thread.currentThread() == thread;
     }
 
     /**
@@ -40,11 +38,11 @@ public class GameThread {
      *
      * @param process
      */
-    public static void async(Runnable process) {
-        if (Thread.currentThread() != gameThread) {
-            pendingRunnables.add(process);
-        } else {
+    public void async(Runnable process) {
+        if (isCurrentThread()) {
             process.run();
+        } else {
+            pendingRunnables.add(process);
         }
     }
 
@@ -55,60 +53,49 @@ public class GameThread {
      *
      * @param process
      */
-    public static void sync(Runnable process) throws InterruptedException {
-        if (Thread.currentThread() != gameThread) {
+    public void sync(Runnable process) throws InterruptedException {
+        if (isCurrentThread()) {
+            process.run();
+        } else {
             BlockingProcess blockingProcess = new BlockingProcess(process);
             pendingRunnables.add(blockingProcess);
             blockingProcess.waitForCompletion();
-        } else {
-            process.run();
         }
     }
 
-    public static <T> Future<T> asyncFuture(Supplier<T> supplier) {
-        if (Thread.currentThread() != gameThread) {
+    public <T> Future<T> asyncFuture(Supplier<T> supplier) {
+        if (isCurrentThread()) {
+            return Futures.immediateFuture(supplier.get());
+        } else {
             AsynchFuture<T> result = new AsynchFuture<>();
             pendingRunnables.add(() -> result.setValue(supplier.get()));
             return result;
-        } else {
-            return Futures.immediateFuture(supplier.get());
         }
     }
 
     /**
      * Runs all pending processes submitted from other threads
+     * @throws IllegalStateException If called from the wrong thread
      */
-    public static void processWaitingProcesses() {
-        if (Thread.currentThread() == gameThread) {
+    public void processWaitingProcesses() {
+        if (isCurrentThread()) {
             List<Runnable> processes = Lists.newArrayList();
             pendingRunnables.drainTo(processes);
             processes.forEach(Runnable::run);
+        } else {
+            throw new IllegalStateException("Cannot process waiting processors off thread");
         }
     }
 
     /**
      * Removes all pending processess without running them
      */
-    public static void clearWaitingProcesses() {
-        if (gameThread == Thread.currentThread()) {
+    public void clearWaitingProcesses() {
+        if (isCurrentThread()) {
             pendingRunnables.clear();
+        } else {
+            throw new IllegalStateException("Cannot process waiting processors off thread");
         }
-    }
-
-    /**
-     * Sets the game thread. This can only be done once.
-     */
-    public static void setToCurrentThread() {
-        if (gameThread == null) {
-            gameThread = Thread.currentThread();
-        }
-    }
-
-    /**
-     * Sets the game thread to null. Should called after a test that calls engine.initialise() is finished.
-     */
-    public static void reset() {
-        gameThread = null;
     }
 
     /**
@@ -135,6 +122,7 @@ public class GameThread {
 
     /**
      * A simple future for providing a value
+     *
      * @param <T>
      */
     private static class AsynchFuture<T> implements Future<T> {

@@ -1,4 +1,4 @@
-package org.terasology.gestalt.example.asteroids.common.core.rendering;
+package org.terasology.gestalt.example.asteroids.common.rendering;
 
 import com.google.common.base.Preconditions;
 import com.google.common.math.IntMath;

@@ -1,10 +1,10 @@
-package org.terasology.gestalt.example.asteroids.common.core.rendering.formats;
+package org.terasology.gestalt.example.asteroids.common.rendering.formats;
 
 import org.joml.Vector2i;
 import org.terasology.gestalt.assets.ResourceUrn;
 import org.terasology.gestalt.assets.format.AbstractAssetFileFormat;
 import org.terasology.gestalt.assets.format.AssetDataFile;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.TextureData;
+import org.terasology.gestalt.example.asteroids.common.rendering.TextureData;
 
 import java.io.IOException;
 import java.io.InputStream;

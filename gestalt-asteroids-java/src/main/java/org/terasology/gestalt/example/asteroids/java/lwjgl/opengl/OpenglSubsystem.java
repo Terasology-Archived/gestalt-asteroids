@@ -11,14 +11,19 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 import org.terasology.gestalt.assets.AssetType;
-import org.terasology.gestalt.assets.management.AssetTypeManager;
 import org.terasology.gestalt.assets.module.ModuleAwareAssetTypeManager;
-import org.terasology.gestalt.example.asteroids.common.core.GameThread;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.TextureData;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.formats.PngTextureFormat;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.formats.TextureInfoFormat;
+import org.terasology.gestalt.entitysystem.entity.EntityIterator;
+import org.terasology.gestalt.entitysystem.entity.EntityManager;
+import org.terasology.gestalt.example.asteroids.common.engine.AssetSubsystem;
+import org.terasology.gestalt.example.asteroids.common.engine.NamedThread;
+import org.terasology.gestalt.example.asteroids.common.engine.entitysystem.EntitySubsystem;
+import org.terasology.gestalt.example.asteroids.common.rendering.TextureData;
+import org.terasology.gestalt.example.asteroids.common.rendering.formats.PngTextureFormat;
+import org.terasology.gestalt.example.asteroids.common.rendering.formats.TextureInfoFormat;
 import org.terasology.gestalt.example.asteroids.common.engine.Engine;
 import org.terasology.gestalt.example.asteroids.common.engine.Subsystem;
+import org.terasology.gestalt.example.asteroids.modules.core.components.Location;
+import org.terasology.gestalt.example.asteroids.modules.core.components.Sprite;
 import org.terasology.gestalt.module.ModuleEnvironment;
 
 import java.io.IOException;
@@ -70,20 +75,24 @@ public class OpenglSubsystem implements Subsystem {
     private Engine engine;
 
     private long window;
-    private int vba;
-    private int vbo;
-    private int uvo;
-    private int program;
+    private int spriteVba;
+    private int spriteShaderProgram;
 
     private AssetType<OpenGLTexture, TextureData> textureAssetType;
     private OpenGLTexture spriteTexture;
+    private NamedThread displayThread;
+    private AssetSubsystem assetSubsystem;
+
+    private EntitySubsystem entitySubsystem;
 
 
     @Override
     public void initialise(Engine engine) {
         this.engine = engine;
+        assetSubsystem = engine.getSubsystemOfType(AssetSubsystem.class);
+        entitySubsystem = engine.getSubsystemOfType(EntitySubsystem.class);
+        displayThread = new NamedThread("GameThread", Thread.currentThread());
         initWindow();
-        GL.createCapabilities();
         initSpriteElements();
         System.out.println("OpenGL version: " + glGetString(GL_VERSION));
     }
@@ -108,22 +117,22 @@ public class OpenglSubsystem implements Subsystem {
         }
         uvBuffer.flip();
 
-        vba = glGenVertexArrays();
-        glBindVertexArray(vba);
-        vbo = glGenBuffers();
+        spriteVba = glGenVertexArrays();
+        glBindVertexArray(spriteVba);
+        int vbo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertBuffer, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        uvo = glGenBuffers();
+        int uvo = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, uvo);
         glBufferData(GL_ARRAY_BUFFER, uvBuffer, GL_STATIC_DRAW);
         glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
 
-        program = glCreateProgram();
+        spriteShaderProgram = glCreateProgram();
         int vertShader = glCreateShader(GL_VERTEX_SHADER);
         int fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -145,16 +154,16 @@ public class OpenglSubsystem implements Subsystem {
         if (glGetShaderi(fragShader, GL_COMPILE_STATUS) == 0) {
             System.out.println(glGetShaderInfoLog(fragShader));
         }
-        glAttachShader(program, vertShader);
-        glAttachShader(program, fragShader);
-        glLinkProgram(program);
-        if (glGetProgrami(program, GL_LINK_STATUS) == 0) {
-            System.out.println(glGetProgramInfoLog(program));
+        glAttachShader(spriteShaderProgram, vertShader);
+        glAttachShader(spriteShaderProgram, fragShader);
+        glLinkProgram(spriteShaderProgram);
+        if (glGetProgrami(spriteShaderProgram, GL_LINK_STATUS) == 0) {
+            System.out.println(glGetProgramInfoLog(spriteShaderProgram));
         }
         if (DEBUG) {
-            glValidateProgram(program);
-            if (glGetProgrami(program, GL_VALIDATE_STATUS) == 0) {
-                System.out.println(glGetProgramInfoLog(program));
+            glValidateProgram(spriteShaderProgram);
+            if (glGetProgrami(spriteShaderProgram, GL_VALIDATE_STATUS) == 0) {
+                System.out.println(glGetProgramInfoLog(spriteShaderProgram));
             }
         }
     }
@@ -210,13 +219,15 @@ public class OpenglSubsystem implements Subsystem {
 
         // Make the window visible
         glfwShowWindow(window);
+
+        GL.createCapabilities();
     }
 
     @Override
     public void registerAssetTypes(ModuleAwareAssetTypeManager assetTypeManager) {
         textureAssetType = assetTypeManager.createAssetType(OpenGLTexture.class, (resourceUrn, assetType, textureData) -> {
             try {
-                return new OpenGLTexture(resourceUrn, assetType, textureData, new OpenGLTextureResource(GameThread.asyncFuture(GL33::glGenTextures).get()));
+                return new OpenGLTexture(resourceUrn, assetType, textureData, new OpenGLTextureResource(displayThread.asyncFuture(GL33::glGenTextures).get(), displayThread));
             } catch (ExecutionException | InterruptedException e) {
                 throw new RuntimeException("Failed to generate texture", e);
             }
@@ -233,13 +244,7 @@ public class OpenglSubsystem implements Subsystem {
         if (glfwWindowShouldClose(window)) {
             engine.exit();
         } else {
-
-            // This line is critical for LWJGL's interoperation with GLFW's
-            // OpenGL context, or any context that is managed externally.
-            // LWJGL detects the context that is current in the current thread,
-            // creates the GLCapabilities instance and makes the OpenGL
-            // bindings available for use.
-            GL.createCapabilities();
+            displayThread.processWaitingProcesses();
 
             // Set the clear color
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -253,15 +258,24 @@ public class OpenglSubsystem implements Subsystem {
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-            glUseProgram(program);
-            glBindVertexArray(vba);
+            glUseProgram(spriteShaderProgram);
+            glBindVertexArray(spriteVba);
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, spriteTexture.getTextureId());
-            int loc = glGetUniformLocation(program, "sample");
-            glUniform1i(loc, 0);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            Location location = new Location();
+            Sprite sprite = new Sprite();
+            EntityIterator entityIterator = entitySubsystem.getEntityManager().iterate(location, sprite);
+            while (entityIterator.next()) {
+                glBindTexture(GL_TEXTURE_2D, ((OpenGLTexture) sprite.getTexture()).getTextureId());
+                int loc = glGetUniformLocation(spriteShaderProgram, "sample");
+                glUniform1i(loc, 0);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+            }
+
+
+
             glDisableVertexAttribArray(1);
             glDisableVertexAttribArray(0);
             glBindVertexArray(0);
@@ -288,8 +302,7 @@ public class OpenglSubsystem implements Subsystem {
 
     @Override
     public void onEnvironmentChanged(ModuleEnvironment environment) {
-        System.out.println(textureAssetType.getAvailableAssetUrns());
-        Optional<OpenGLTexture> asset = textureAssetType.getAsset("core:ship");
-        spriteTexture = asset.get();
+        Optional<OpenGLTexture> asset = assetSubsystem.getAssetManager().getAsset("core:ship", OpenGLTexture.class);
+        spriteTexture = asset.orElseThrow(() -> new RuntimeException("Missing required asset core:ship texture"));
     }
 }

@@ -1,0 +1,18 @@
+{
+  "entities" : {
+    "root": {
+      "Location": {
+      },
+      "Sprite" : {
+        "texture" : "core:ship"
+      }
+    },
+    "second": {
+      "Location": {
+      },
+      "Sprite" : {
+        "texture" : "core:asteroid"
+      }
+    }
+  }
+}

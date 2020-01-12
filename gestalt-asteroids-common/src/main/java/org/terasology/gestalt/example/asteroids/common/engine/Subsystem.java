@@ -1,16 +1,26 @@
 package org.terasology.gestalt.example.asteroids.common.engine;
 
+import org.terasology.gestalt.assets.management.AssetManager;
 import org.terasology.gestalt.assets.module.ModuleAwareAssetTypeManager;
 import org.terasology.gestalt.module.ModuleEnvironment;
 
 public interface Subsystem {
-    void initialise(Engine engine);
+    default void initialise(Engine engine) {
+    }
 
-    void registerAssetTypes(ModuleAwareAssetTypeManager assetTypeManager);
+    default void registerAssetTypes(ModuleAwareAssetTypeManager assetTypeManager) {
+    }
 
-    void tick(int delta);
+    default void tick(int delta) {
+    }
 
-    void close();
+    default void close() {
+    }
 
-    void onEnvironmentChanged(ModuleEnvironment environment);
+    default void onEnvironmentChanged(ModuleEnvironment newEnvironment) {
+    }
+
+    default void onAssetsAvailable(AssetManager assetManager) {
+
+    }
 }

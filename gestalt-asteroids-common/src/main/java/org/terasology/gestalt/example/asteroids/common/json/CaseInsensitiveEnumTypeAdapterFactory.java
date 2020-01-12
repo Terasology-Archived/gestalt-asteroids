@@ -1,4 +1,4 @@
-package org.terasology.gestalt.example.asteroids.common.core.json;
+package org.terasology.gestalt.example.asteroids.common.json;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;

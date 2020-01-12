@@ -1,18 +1,13 @@
 package org.terasology.gestalt.example.asteroids.java.lwjgl.opengl;
 
-import com.google.common.math.IntMath;
-
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import static org.lwjgl.opengl.GL33.*;
 import org.terasology.gestalt.assets.AssetType;
 import org.terasology.gestalt.assets.ResourceUrn;
-import org.terasology.gestalt.example.asteroids.common.core.GameThread;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.FilterMode;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.Texture;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.TextureData;
-
-import java.math.RoundingMode;
+import org.terasology.gestalt.example.asteroids.common.rendering.FilterMode;
+import org.terasology.gestalt.example.asteroids.common.rendering.Texture;
+import org.terasology.gestalt.example.asteroids.common.rendering.TextureData;
 
 public class OpenGLTexture extends Texture {
 
@@ -39,7 +34,7 @@ public class OpenGLTexture extends Texture {
     protected void doReload(TextureData textureData) {
         loaded = false;
         size.set(textureData.getSize());
-        GameThread.async(() -> {
+        textureResource.getDisplayThread().async(() -> {
             glBindTexture(GL_TEXTURE_2D, textureResource.getId());
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureData.getSize().x, textureData.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData.getPixelData());
             if (textureData.isMipmap())

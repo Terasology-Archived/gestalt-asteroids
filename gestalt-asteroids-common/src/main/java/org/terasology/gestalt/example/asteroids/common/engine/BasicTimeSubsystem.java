@@ -1,8 +1,5 @@
 package org.terasology.gestalt.example.asteroids.common.engine;
 
-import org.terasology.gestalt.assets.module.ModuleAwareAssetTypeManager;
-import org.terasology.gestalt.module.ModuleEnvironment;
-
 public class BasicTimeSubsystem implements TimeSubsystem {
 
     private final int maxFrameTime;
@@ -19,11 +16,7 @@ public class BasicTimeSubsystem implements TimeSubsystem {
 
     @Override
     public void initialise(Engine engine) {
-       lastTime = getTime();
-    }
-
-    @Override
-    public void registerAssetTypes(ModuleAwareAssetTypeManager assetTypeManager) {
+        lastTime = getTime();
     }
 
     @Override
@@ -31,15 +24,6 @@ public class BasicTimeSubsystem implements TimeSubsystem {
         long newTime = getTime();
         delta = Math.min((int) (newTime - lastTime), maxFrameTime);
         lastTime = newTime;
-    }
-
-    @Override
-    public void close() {
-
-    }
-
-    @Override
-    public void onEnvironmentChanged(ModuleEnvironment environment) {
     }
 
     @Override
@@ -55,8 +39,6 @@ public class BasicTimeSubsystem implements TimeSubsystem {
     private long getTime() {
         return System.nanoTime() / 1000000;
     }
-
-
 
 
 }

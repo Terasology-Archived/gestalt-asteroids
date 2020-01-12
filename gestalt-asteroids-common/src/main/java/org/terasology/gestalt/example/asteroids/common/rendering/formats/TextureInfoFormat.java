@@ -1,4 +1,4 @@
-package org.terasology.gestalt.example.asteroids.common.core.rendering.formats;
+package org.terasology.gestalt.example.asteroids.common.rendering.formats;
 
 import com.google.common.base.Charsets;
 import com.google.gson.Gson;
@@ -6,10 +6,10 @@ import com.google.gson.GsonBuilder;
 
 import org.terasology.gestalt.assets.format.AbstractAssetAlterationFileFormat;
 import org.terasology.gestalt.assets.format.AssetDataFile;
-import org.terasology.gestalt.example.asteroids.common.core.json.CaseInsensitiveEnumTypeAdapterFactory;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.FilterMode;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.TextureData;
-import org.terasology.gestalt.example.asteroids.common.core.rendering.WrapMode;
+import org.terasology.gestalt.example.asteroids.common.json.CaseInsensitiveEnumTypeAdapterFactory;
+import org.terasology.gestalt.example.asteroids.common.rendering.FilterMode;
+import org.terasology.gestalt.example.asteroids.common.rendering.TextureData;
+import org.terasology.gestalt.example.asteroids.common.rendering.WrapMode;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

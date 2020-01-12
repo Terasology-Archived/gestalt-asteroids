@@ -1,0 +1,10 @@
+{
+  "id": "Core",
+  "version": "1.0.0",
+  "displayName": {
+    "en": "Core Module"
+  },
+  "description": {
+    "en": "Core elements"
+  }
+}
