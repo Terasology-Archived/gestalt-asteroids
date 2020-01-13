@@ -2,13 +2,66 @@
   "entities" : {
     "root": {
       "Location": {
+        "scale": 4
       },
       "Sprite" : {
         "texture" : "core:ship"
       }
     },
-    "second": {
+    "asteroid1": {
       "Location": {
+        "position" : {
+          "x": -12,
+          "y": 15
+        },
+        "scale": 12
+      },
+      "Sprite" : {
+        "texture" : "core:asteroid"
+      }
+    },
+    "asteroid2": {
+      "Location": {
+        "position" : {
+          "x": 22,
+          "y": -13
+        },
+        "scale": 12
+      },
+      "Sprite" : {
+        "texture" : "core:asteroid"
+      }
+    },
+    "asteroid3": {
+      "Location": {
+        "position" : {
+          "x": 13,
+          "y": 13
+        },
+        "scale": 12
+      },
+      "Sprite" : {
+        "texture" : "core:asteroid"
+      }
+    },
+    "asteroid4": {
+      "Location": {
+        "position" : {
+          "x": -18,
+          "y": -11
+        },
+        "scale": 12
+      },
+      "Sprite" : {
+        "texture" : "core:asteroid"
+      }
+    },"asteroid5": {
+      "Location": {
+        "position" : {
+          "x": 13,
+          "y": 0
+        },
+        "scale": 12
       },
       "Sprite" : {
         "texture" : "core:asteroid"

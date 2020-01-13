@@ -2,6 +2,8 @@ package org.terasology.gestalt.example.asteroids.common.engine.entitysystem;
 
 import com.google.gson.GsonBuilder;
 
+import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.terasology.gestalt.assets.AssetType;
 import org.terasology.gestalt.assets.ResolutionStrategy;
 import org.terasology.gestalt.assets.format.producer.AssetFileDataProducer;
@@ -29,6 +31,7 @@ import org.terasology.gestalt.example.asteroids.common.engine.Engine;
 import org.terasology.gestalt.example.asteroids.common.engine.Subsystem;
 import org.terasology.gestalt.example.asteroids.common.engine.entitysystem.HighUsage;
 import org.terasology.gestalt.example.asteroids.common.json.AssetTypeAdapterFactory;
+import org.terasology.gestalt.example.asteroids.common.json.Vector3fAdapter;
 import org.terasology.gestalt.module.ModuleEnvironment;
 
 import java.util.ArrayList;
@@ -66,6 +69,8 @@ public class EntitySubsystem implements Subsystem {
         prefabAssetType = assetTypeManager.createAssetType(Prefab.class, Prefab::new, "prefabs");
         AssetFileDataProducer<PrefabData> assetFileDataProducer = moduleAwareAssetTypeManager.getAssetFileDataProducer(prefabAssetType);
         gsonBuilder.registerTypeAdapterFactory(new AssetTypeAdapterFactory(assetTypeManager.getAssetManager()));
+        gsonBuilder.registerTypeAdapter(Vector3f.class, new Vector3fAdapter());
+        gsonBuilder.registerTypeAdapter(Vector3fc.class, new Vector3fAdapter());
         prefabJsonFormat = new PrefabJsonFormat(componentTypeIndex, componentManager, assetSubsystem.getAssetManager(), gsonBuilder);
         assetFileDataProducer.addAssetFormat(prefabJsonFormat);
     }

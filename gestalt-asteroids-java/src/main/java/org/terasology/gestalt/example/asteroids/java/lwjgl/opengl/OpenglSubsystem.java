@@ -2,6 +2,7 @@ package org.terasology.gestalt.example.asteroids.java.lwjgl.opengl;
 
 import com.google.common.io.CharStreams;
 
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
@@ -77,6 +78,9 @@ public class OpenglSubsystem implements Subsystem {
     private long window;
     private int spriteVba;
     private int spriteShaderProgram;
+
+    private int spriteShaderUniformTextureIndex;
+    private int spriteShaderUniformWVPIndex;
 
     private AssetType<OpenGLTexture, TextureData> textureAssetType;
     private OpenGLTexture spriteTexture;
@@ -160,6 +164,9 @@ public class OpenglSubsystem implements Subsystem {
         if (glGetProgrami(spriteShaderProgram, GL_LINK_STATUS) == 0) {
             System.out.println(glGetProgramInfoLog(spriteShaderProgram));
         }
+        spriteShaderUniformTextureIndex = glGetUniformLocation(spriteShaderProgram, "sample");
+        spriteShaderUniformWVPIndex = glGetUniformLocation(spriteShaderProgram,"worldviewperpective");
+
         if (DEBUG) {
             glValidateProgram(spriteShaderProgram);
             if (glGetProgrami(spriteShaderProgram, GL_VALIDATE_STATUS) == 0) {
@@ -267,15 +274,20 @@ public class OpenglSubsystem implements Subsystem {
             Location location = new Location();
             Sprite sprite = new Sprite();
             EntityIterator entityIterator = entitySubsystem.getEntityManager().iterate(location, sprite);
+            Matrix4f viewProj = new Matrix4f().ortho(-50, 50, -50, 50, 1, 0, false);
+            Matrix4f world = new Matrix4f();
             while (entityIterator.next()) {
+                world.set(viewProj);
+                world.translate(location.getPosition());
+                world.rotate(location.getRotation());
+                world.scale(location.getScale());
+                float[] rawMat = new float[16];
+                world.get(rawMat);
                 glBindTexture(GL_TEXTURE_2D, ((OpenGLTexture) sprite.getTexture()).getTextureId());
-                int loc = glGetUniformLocation(spriteShaderProgram, "sample");
-                glUniform1i(loc, 0);
+                glUniform1i(spriteShaderUniformTextureIndex, 0);
+                glUniformMatrix4fv(spriteShaderUniformWVPIndex, false, rawMat);
                 glDrawArrays(GL_TRIANGLES, 0, 6);
             }
-
-
-
             glDisableVertexAttribArray(1);
             glDisableVertexAttribArray(0);
             glBindVertexArray(0);
