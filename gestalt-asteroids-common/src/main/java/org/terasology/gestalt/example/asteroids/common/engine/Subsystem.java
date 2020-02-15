@@ -4,6 +4,8 @@ import org.terasology.gestalt.assets.management.AssetManager;
 import org.terasology.gestalt.assets.module.ModuleAwareAssetTypeManager;
 import org.terasology.gestalt.module.ModuleEnvironment;
 
+import java.util.Set;
+
 public interface Subsystem {
     default void initialise(Engine engine) {
     }
@@ -11,7 +13,14 @@ public interface Subsystem {
     default void registerAssetTypes(ModuleAwareAssetTypeManager assetTypeManager) {
     }
 
-    default void tick(int delta) {
+    default void registerProviders(GameLogicSubsystem gameLogicSubsystem) {
+    }
+
+    default void onSystemsAvailable(Set<Object> systems) {
+
+    }
+
+    default void tick() {
     }
 
     default void close() {

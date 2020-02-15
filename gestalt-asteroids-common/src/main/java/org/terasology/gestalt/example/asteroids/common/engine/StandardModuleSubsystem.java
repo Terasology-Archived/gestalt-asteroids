@@ -3,6 +3,7 @@ package org.terasology.gestalt.example.asteroids.common.engine;
 import org.terasology.gestalt.module.Module;
 import org.terasology.gestalt.module.ModuleEnvironment;
 import org.terasology.gestalt.module.ModuleFactory;
+import org.terasology.gestalt.module.ModuleMetadataJsonAdapter;
 import org.terasology.gestalt.module.sandbox.ModuleSecurityManager;
 import org.terasology.gestalt.module.sandbox.ModuleSecurityPolicy;
 import org.terasology.gestalt.module.sandbox.PermissionProviderFactory;

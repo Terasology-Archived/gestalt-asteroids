@@ -26,6 +26,9 @@ dependencies {
     api "org.terasology.gestalt:gestalt-asset-core:7.0.4-SNAPSHOT"
     api "org.terasology.gestalt:gestalt-util:7.0.4-SNAPSHOT"
 
+    annotationProcessor project(":gestalt-di")
+    implementation project(":gestalt-di")
+
     implementation 'de.matthiasmann.twl:PNGDecoder:1111'
     implementation 'com.google.code.gson:gson:2.8.6'
 

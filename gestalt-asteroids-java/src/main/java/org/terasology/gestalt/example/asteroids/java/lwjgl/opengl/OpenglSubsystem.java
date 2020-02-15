@@ -246,7 +246,7 @@ public class OpenglSubsystem implements Subsystem {
     }
 
     @Override
-    public void tick(int delta) {
+    public void tick() {
 
         if (glfwWindowShouldClose(window)) {
             engine.exit();

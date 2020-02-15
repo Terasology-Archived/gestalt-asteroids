@@ -18,6 +18,12 @@
       },
       "Sprite" : {
         "texture" : "core:asteroid"
+      },
+      "Drift" : {
+        "velocity" : {
+          "x" : -0.1,
+          "y" : -0.1
+        }
       }
     },
     "asteroid2": {
@@ -30,6 +36,12 @@
       },
       "Sprite" : {
         "texture" : "core:asteroid"
+      },
+      "Drift" : {
+        "velocity" : {
+          "x" : -0.1,
+          "y" : -0.1
+        }
       }
     },
     "asteroid3": {
@@ -42,6 +54,12 @@
       },
       "Sprite" : {
         "texture" : "core:asteroid"
+      },
+      "Drift" : {
+        "velocity" : {
+          "x" : -0.1,
+          "y" : -0.1
+        }
       }
     },
     "asteroid4": {
@@ -54,6 +72,12 @@
       },
       "Sprite" : {
         "texture" : "core:asteroid"
+      },
+      "Drift" : {
+        "velocity" : {
+          "x" : -0.1,
+          "y" : -0.1
+        }
       }
     },"asteroid5": {
       "Location": {
@@ -65,6 +89,12 @@
       },
       "Sprite" : {
         "texture" : "core:asteroid"
+      },
+      "Drift" : {
+        "velocity" : {
+          "x" : -0.1,
+          "y" : -0.1
+        }
       }
     }
   }

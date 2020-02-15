@@ -1,5 +1,5 @@
 rootProject.name='gestalt-asteroids'
-include ':gestalt-asteroids-common', ':gestalt-asteroids-java'
+include ':gestalt-asteroids-common', ':gestalt-asteroids-java', ':gestalt-di'
 
 if (new File("local.properties").exists()) {
     include ':gestalt-asteroids-android'

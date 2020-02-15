@@ -4,7 +4,9 @@ public class BasicTimeSubsystem implements TimeSubsystem {
 
     private final int maxFrameTime;
     private long lastTime;
-    private int delta = 1;
+    private int deltaMs = 1;
+    private float delta = 0.001f;
+    private Time timeControl = new TimeImpl();
 
     public BasicTimeSubsystem() {
         this(1500);
@@ -16,29 +18,62 @@ public class BasicTimeSubsystem implements TimeSubsystem {
 
     @Override
     public void initialise(Engine engine) {
-        lastTime = getTime();
+        lastTime = getCurrentTime();
     }
 
+
     @Override
-    public void tick(int lastDelta) {
-        long newTime = getTime();
-        delta = Math.min((int) (newTime - lastTime), maxFrameTime);
+    public void tick() {
+        long newTime = getCurrentTime();
+        deltaMs = Math.min((int) (newTime - lastTime), maxFrameTime);
+        delta = deltaMs / 1000f;
         lastTime = newTime;
     }
 
     @Override
-    public int deltaMs() {
-        return delta;
+    public Time getTime() {
+        return timeControl;
     }
 
-    @Override
-    public float delta() {
-        return 1.0f / delta;
-    }
-
-    private long getTime() {
+    private long getCurrentTime() {
         return System.nanoTime() / 1000000;
     }
 
+    private class TimeImpl implements Time {
 
+
+        @Override
+        public float globalDelta() {
+            return delta;
+        }
+
+        @Override
+        public int globalDeltaMs() {
+            return deltaMs;
+        }
+
+        @Override
+        public float gameDelta() {
+            return delta;
+        }
+
+        @Override
+        public int gameDeltaMs() {
+            return deltaMs;
+        }
+
+        @Override
+        public boolean isPaused() {
+            // TODO
+            return false;
+        }
+
+        @Override
+        public void togglePaused() {
+            // TODO
+        }
+
+        // TODO: Time dialation
+        // TODO: Current time
+    }
 }
